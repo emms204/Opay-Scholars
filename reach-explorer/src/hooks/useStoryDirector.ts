@@ -7,7 +7,6 @@ function applyBeat(beat: StoryBeat) {
   if (beat.layer) store.setLayerMode(beat.layer);
   if (beat.period_index != null) store.setPeriodIndex(beat.period_index);
   if (beat.time_mode) store.setTimeMode(beat.time_mode);
-  if (beat.use_3d != null) store.setUse3D(beat.use_3d);
   store.setPlaying(Boolean(beat.playing));
 }
 

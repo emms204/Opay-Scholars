@@ -1,13 +1,11 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import maplibregl, { Map } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { GeoJsonLayer, ColumnLayer, ScatterplotLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, ScatterplotLayer } from '@deck.gl/layers';
 import type { FeatureCollection } from 'geojson';
 import { useExplorerStore } from '../store/explorerStore';
 import {
-  createElevationScale,
   filterSchools,
-  goldFromCount,
   getSchoolValue,
   getSchoolScaleMax,
   getStateCumulative,
@@ -17,7 +15,6 @@ import {
   getZoneValue,
   getZoneWeekly,
   getZoneScaleMax,
-  isStateNewlyReached,
   mutedZeroColor,
   normalizeGeoName,
   tealFromCount,
@@ -39,14 +36,12 @@ export function ReachMap() {
   const overlayRef = useRef<MapboxOverlay | null>(null);
   const geoRef = useRef<FeatureCollection | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [pulseVisible, setPulseVisible] = useState(true);
 
   const {
     data,
     layerMode,
     timeMode,
     periodIndex,
-    use3D,
     selectedState,
     selectedZone,
     setSelectedState,
@@ -83,10 +78,10 @@ export function ReachMap() {
     map.flyTo({
       center: [state.centroid.lng, state.centroid.lat],
       zoom: 7.5,
-      pitch: use3D ? 55 : 0,
+      pitch: 0,
       duration: 1800,
     });
-  }, [use3D]);
+  }, []);
 
   const flyToZone = useCallback((zoneName: string) => {
     const map = mapRef.current;
@@ -101,21 +96,16 @@ export function ReachMap() {
       [Math.min(...lngs) - 0.5, Math.min(...lats) - 0.5],
       [Math.max(...lngs) + 0.5, Math.max(...lats) + 0.5],
     ];
-    map.fitBounds(bounds, { padding: 80, pitch: use3D ? 45 : 0, duration: 1800 });
-  }, [data, use3D]);
+    map.fitBounds(bounds, { padding: 80, pitch: 0, duration: 1800 });
+  }, [data]);
 
   const buildLayers = useCallback(() => {
     if (!data || !geoRef.current) return [];
 
     const period = data.periods[periodIndex];
-    const storyBeat = appMode === 'story' ? data.story_beats[storyIndex] : null;
     const scaleMax = layerMode === 'zones'
       ? getZoneScaleMax(data, timeMode)
       : getStateScaleMax(data, timeMode);
-    const weeklyMax = layerMode === 'zones'
-      ? getZoneScaleMax(data, 'weekly')
-      : getStateScaleMax(data, 'weekly');
-    const elevScale = createElevationScale(scaleMax);
     const stateForFeature = (f: { properties: { name: string } }) => {
       const name = normalizeGeoName(f.properties.name);
       return data.states.find((s) => s.name === name);
@@ -141,15 +131,7 @@ export function ReachMap() {
         ? data.zones.find((z) => z.name === state.zone)?.applications ?? 0
         : state.applications
     );
-    const featureNew = (state: StateRecord) => (
-      layerMode === 'zones'
-        ? getZoneValue(data, state.zone, period, 'cumulative') > 0
-          && (!data.periods[data.periods.indexOf(period) - 1]
-            || getZoneValue(data, state.zone, data.periods[data.periods.indexOf(period) - 1], 'cumulative') === 0)
-        : isStateNewlyReached(state, data.periods, period)
-    );
-
-    const layers: (GeoJsonLayer | ColumnLayer | ScatterplotLayer)[] = [];
+    const layers: (GeoJsonLayer | ScatterplotLayer)[] = [];
 
     if (layerMode === 'states' || layerMode === 'zones') {
       layers.push(
@@ -159,43 +141,24 @@ export function ReachMap() {
           pickable: true,
           stroked: true,
           filled: true,
-          extruded: use3D,
+          extruded: false,
           wireframe: false,
-          // Keep fill colors visible on extruded polygons (default lighting washes them out).
-          material: false,
-          getElevation: (f: { properties: { name: string } }) => {
-            const state = stateForFeature(f);
-            if (!state) return 0;
-            return use3D ? elevScale(featureValue(state)) : 0;
-          },
           getFillColor: (f: { properties: { name: string } }) => {
             const state = stateForFeature(f);
             if (!state) return mutedZeroColor();
-            return tealFromCount(featureValue(state), scaleMax, 238, layerMode);
+            return tealFromCount(featureValue(state), scaleMax);
           },
           getLineColor: (f: { properties: { name: string } }) => {
             const state = stateForFeature(f);
-            if (!state) return [255, 255, 255, 80];
-            const weekly = featureWeekly(state);
-            if (storyBeat?.highlight_states?.includes(state.name)) {
-              return [255, 214, 102, 255];
-            }
-            if (storyBeat?.highlight_growth_states?.includes(state.name)) {
-              return goldFromCount(Math.max(weekly, 1), weeklyMax, 255);
-            }
-            if (pulseVisible && featureNew(state)) return [255, 214, 102, 255];
-            return [226, 232, 240, 110];
+            if (!state) return [107, 114, 128, 120];
+            return [75, 85, 99, 145];
           },
-          lineWidthMinPixels: pulseVisible ? 1.5 : 1,
+          lineWidthMinPixels: 0.75,
           transitions: {
             getFillColor: 700,
-            getElevation: 900,
-            getLineColor: 500,
           },
           updateTriggers: {
-            getFillColor: [periodIndex, timeMode, layerMode, storyIndex, appMode],
-            getLineColor: [periodIndex, timeMode, layerMode, storyIndex, appMode, pulseVisible],
-            getElevation: [periodIndex, timeMode, use3D, layerMode],
+            getFillColor: [periodIndex, timeMode, layerMode],
           },
           onHover: (info) => {
             if (!info.object) {
@@ -240,24 +203,6 @@ export function ReachMap() {
           },
         }),
       );
-
-      if (pulseVisible || storyBeat?.effects?.includes('pulse_new_states')) {
-        const pulseStates = data.states.filter((s) => isStateNewlyReached(s, data.periods, period));
-        if (pulseStates.length) {
-          layers.push(
-            new ScatterplotLayer({
-              id: 'story-pulse-states',
-              data: pulseStates,
-              pickable: false,
-              getPosition: (d) => [d.centroid.lng, d.centroid.lat],
-              getRadius: 22000,
-              getFillColor: [255, 181, 64, 100],
-              radiusMinPixels: 6,
-              radiusMaxPixels: 26,
-            }),
-          );
-        }
-      }
     }
 
     if (layerMode === 'schools') {
@@ -278,40 +223,18 @@ export function ReachMap() {
 
       layers.push(
         new ScatterplotLayer({
-          id: 'schools-glow',
+          id: 'schools-points',
           data: schools,
           pickable: true,
           getPosition: (d) => [d.lng!, d.lat!],
           getRadius: (d) => 8000 + (getSchoolValue(d, period, schoolTimeMode) / schoolMax) * 20000,
           getFillColor: (d) =>
-            d.kind === 'partner' ? [0, 122, 112, 95] : [255, 181, 64, 95],
+            d.kind === 'partner' ? [0, 82, 74, 210] : [13, 148, 136, 195],
+          getLineColor: [255, 255, 255, 220],
+          stroked: true,
+          lineWidthMinPixels: 1,
           radiusMinPixels: 4,
           radiusMaxPixels: 40,
-          onHover: (info) => {
-            if (!info.object) {
-              hideTooltip();
-              return;
-            }
-            showTooltip(info.x, info.y, schoolTooltip(info.object as SchoolRecord));
-          },
-          onClick: (info) => {
-            if (info.object) setSelectedSchool(info.object as SchoolRecord);
-          },
-        }),
-        new ColumnLayer({
-          id: 'schools-columns',
-          data: schools,
-          pickable: true,
-          diskResolution: 12,
-          radius: 6000,
-          extruded: use3D,
-          getPosition: (d) => [d.lng!, d.lat!],
-          getFillColor: (d) =>
-            d.kind === 'partner' ? [0, 122, 112, 225] : [255, 181, 64, 215],
-          getElevation: (d) => (use3D ? getSchoolValue(d, period, schoolTimeMode) * 4000 : 0),
-          updateTriggers: {
-            getElevation: [use3D, periodIndex, timeMode],
-          },
           onHover: (info) => {
             if (!info.object) {
               hideTooltip();
@@ -328,17 +251,10 @@ export function ReachMap() {
 
     return layers;
   }, [
-    data, layerMode, timeMode, periodIndex, use3D, selectedState, selectedZone,
+    data, layerMode, timeMode, periodIndex, selectedState, selectedZone,
     schoolFilter, searchQuery, setSelectedState, setSelectedZone, setSelectedSchool,
     setHoveredState, flyToState, flyToZone, compareState, showTooltip, hideTooltip,
-    appMode, storyIndex, pulseVisible,
   ]);
-
-  useEffect(() => {
-    setPulseVisible(true);
-    const timeout = window.setTimeout(() => setPulseVisible(false), 1800);
-    return () => window.clearTimeout(timeout);
-  }, [periodIndex]);
 
   // Init map
   useEffect(() => {
@@ -351,7 +267,7 @@ export function ReachMap() {
         sources: {
           base: {
             type: 'raster',
-            tiles: ['https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'],
+            tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
             tileSize: 256,
             attribution: '© OpenStreetMap © CARTO',
           },
@@ -360,8 +276,8 @@ export function ReachMap() {
       },
       center: NIGERIA_CENTER,
       zoom: getInitialZoom(),
-      pitch: use3D ? 50 : 0,
-      bearing: -10,
+      pitch: 0,
+      bearing: 0,
       antialias: true,
     });
 
@@ -392,13 +308,6 @@ export function ReachMap() {
     overlayRef.current?.setProps({ layers: buildLayers() });
   }, [buildLayers]);
 
-  // Pitch toggle
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    map.easeTo({ pitch: use3D ? 50 : 0, duration: 800 });
-  }, [use3D]);
-
   // Timeline play
   useEffect(() => {
     if (!playing || !data) return;
@@ -422,10 +331,10 @@ export function ReachMap() {
     map.flyTo({
       center: beat.camera.center as [number, number],
       zoom: beat.camera.zoom,
-      pitch: beat.camera.pitch ?? (use3D ? 50 : 0),
+      pitch: 0,
       duration: 2000,
     });
-  }, [appMode, storyIndex, data, use3D]);
+  }, [appMode, storyIndex, data]);
 
   return (
     <div className="map-wrap" data-testid="reach-map">

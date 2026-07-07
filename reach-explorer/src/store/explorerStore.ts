@@ -26,7 +26,6 @@ interface ExplorerState {
   compareState: StateRecord | null;
   schoolFilter: 'all' | 'partner' | 'nonpartner';
   searchQuery: string;
-  use3D: boolean;
   hoveredState: string | null;
   setData: (data: ReachData) => void;
   setLoading: (v: boolean) => void;
@@ -44,7 +43,6 @@ interface ExplorerState {
   setCompareState: (s: StateRecord | null) => void;
   setSchoolFilter: (f: 'all' | 'partner' | 'nonpartner') => void;
   setSearchQuery: (q: string) => void;
-  setUse3D: (v: boolean) => void;
   setHoveredState: (name: string | null) => void;
   currentPeriod: () => PeriodId;
 }
@@ -66,7 +64,6 @@ export const useExplorerStore = create<ExplorerState>((set, get) => ({
   compareState: null,
   schoolFilter: 'all',
   searchQuery: '',
-  use3D: typeof window !== 'undefined' && window.innerWidth > 768,
   hoveredState: null,
   setData: (data) => set({ data }),
   setLoading: (loading) => set({ loading }),
@@ -94,7 +91,6 @@ export const useExplorerStore = create<ExplorerState>((set, get) => ({
   setCompareState: (compareState) => set({ compareState }),
   setSchoolFilter: (schoolFilter) => set({ schoolFilter }),
   setSearchQuery: (searchQuery) => set({ searchQuery }),
-  setUse3D: (use3D) => set({ use3D }),
   setHoveredState: (hoveredState) => set({ hoveredState }),
   currentPeriod: () => {
     const { data, periodIndex } = get();

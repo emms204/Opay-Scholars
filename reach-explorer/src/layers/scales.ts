@@ -1,34 +1,5 @@
 import { scaleSqrt } from 'd3-scale';
-import type { LayerMode, PeriodId, ReachData, SchoolRecord, StateRecord, TimeMode } from '../types/reach';
-
-export interface HeatmapBin {
-  label: string;
-  min: number;
-  max?: number;
-  color: [number, number, number];
-}
-
-export const STATE_HEATMAP_BINS: HeatmapBin[] = [
-  { label: '0', min: 0, max: 0, color: [49, 61, 83] },
-  { label: '1-5', min: 1, max: 5, color: [204, 251, 241] },
-  { label: '6-20', min: 6, max: 20, color: [153, 246, 228] },
-  { label: '21-50', min: 21, max: 50, color: [94, 234, 212] },
-  { label: '51-100', min: 51, max: 100, color: [20, 184, 166] },
-  { label: '101+', min: 101, color: [4, 120, 110] },
-];
-
-export const ZONE_HEATMAP_BINS: HeatmapBin[] = [
-  { label: '0', min: 0, max: 0, color: [49, 61, 83] },
-  { label: '1-50', min: 1, max: 50, color: [204, 251, 241] },
-  { label: '51-100', min: 51, max: 100, color: [153, 246, 228] },
-  { label: '101-200', min: 101, max: 200, color: [94, 234, 212] },
-  { label: '201-400', min: 201, max: 400, color: [20, 184, 166] },
-  { label: '401+', min: 401, color: [4, 120, 110] },
-];
-
-export function getHeatmapBins(layerMode: LayerMode): HeatmapBin[] {
-  return layerMode === 'zones' ? ZONE_HEATMAP_BINS : STATE_HEATMAP_BINS;
-}
+import type { PeriodId, ReachData, SchoolRecord, StateRecord, TimeMode } from '../types/reach';
 
 export function getStateValue(
   state: StateRecord,
@@ -130,39 +101,25 @@ export function getSchoolScaleMax(
   );
 }
 
-export function createElevationScale(max: number) {
-  return scaleSqrt().domain([0, Math.max(max, 1)]).range([0, 80000]);
-}
-
 function interpolateChannel(start: number, end: number, t: number) {
   return Math.round(start + (end - start) * t);
 }
 
-export function mutedZeroColor(alpha = 105): [number, number, number, number] {
-  return [49, 61, 83, alpha];
+export function mutedZeroColor(alpha = 135): [number, number, number, number] {
+  return [226, 232, 240, alpha];
 }
 
 export function tealFromCount(
   count: number,
-  _max: number,
-  alpha = 235,
-  layerMode: LayerMode = 'states',
+  max: number,
+  alpha = 215,
 ): [number, number, number, number] {
   if (count <= 0) return mutedZeroColor();
-  const bins = getHeatmapBins(layerMode).filter((bin) => bin.min > 0);
-  const bin = bins.find((candidate) =>
-    count >= candidate.min && (candidate.max == null || count <= candidate.max),
-  ) ?? bins[bins.length - 1];
-  return [bin.color[0], bin.color[1], bin.color[2], alpha];
-}
-
-export function goldFromCount(count: number, max: number, alpha = 235): [number, number, number, number] {
-  if (count <= 0) return [0, 0, 0, 0];
-  const t = scaleSqrt().domain([0, Math.max(max, 1)]).range([0.35, 1])(count);
+  const t = scaleSqrt().domain([0, Math.max(max, 1)]).range([0.12, 1])(count);
   return [
-    255,
-    interpolateChannel(214, 157, t),
-    interpolateChannel(102, 24, t),
+    interpolateChannel(209, 0, t),
+    interpolateChannel(250, 82, t),
+    interpolateChannel(229, 74, t),
     alpha,
   ];
 }

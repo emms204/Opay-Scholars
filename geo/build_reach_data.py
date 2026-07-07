@@ -332,12 +332,6 @@ def build() -> dict:
     week2_new = next(r["states_new"] for r in period_summary if r["id"] == "Week2")
     week3_weekly = next(r["weekly"] for r in period_summary if r["id"] == "Week3")
     institution_count = len(school_counts)
-    top_week3 = sorted(
-        [(s["name"], s["by_period"]["Week3"]["weekly"]) for s in states_out],
-        key=lambda x: x[1],
-        reverse=True,
-    )[:3]
-    week3_leaders = [name for name, count in top_week3 if count > 0]
     lagos = next(s for s in states_out if s["name"] == "Lagos")
 
     story_beats = [
@@ -349,8 +343,6 @@ def build() -> dict:
             "layer": "states",
             "period_index": 5,
             "time_mode": "cumulative",
-            "use_3d": False,
-            "effects": [],
         },
         {
             "id": "week1_spread",
@@ -360,8 +352,6 @@ def build() -> dict:
             "layer": "states",
             "period_index": 0,
             "time_mode": "cumulative",
-            "use_3d": True,
-            "effects": ["pulse_new_states"],
         },
         {
             "id": "week2_coverage",
@@ -371,8 +361,6 @@ def build() -> dict:
             "layer": "states",
             "period_index": 1,
             "time_mode": "cumulative",
-            "use_3d": True,
-            "effects": ["pulse_new_states"],
         },
         {
             "id": "week3_surge",
@@ -382,10 +370,7 @@ def build() -> dict:
             "layer": "states",
             "period_index": 2,
             "time_mode": "weekly",
-            "use_3d": True,
             "playing": True,
-            "highlight_growth_states": week3_leaders,
-            "effects": ["surge"],
         },
         {
             "id": "lagos_dominance",
@@ -395,21 +380,15 @@ def build() -> dict:
             "layer": "states",
             "period_index": 2,
             "time_mode": "cumulative",
-            "use_3d": True,
-            "highlight_states": ["Lagos", "Ogun", "Oyo"],
-            "effects": [],
         },
         {
             "id": "institutions",
-            "text": f"{institution_count:,} institutions participated — school pillars cluster around innovation hubs.",
+            "text": f"{institution_count:,} institutions participated — school points cluster around innovation hubs.",
             "duration_ms": 8000,
             "camera": {"center": [3.45, 6.55], "zoom": 8.5, "pitch": 55},
             "layer": "schools",
             "period_index": 2,
             "time_mode": "weekly",
-            "use_3d": True,
-            "highlight_states": ["Lagos"],
-            "effects": [],
         },
         {
             "id": "final_push",
@@ -419,8 +398,6 @@ def build() -> dict:
             "layer": "states",
             "period_index": 5,
             "time_mode": "weekly",
-            "use_3d": True,
-            "effects": [],
             "on_exit": {"app_mode": "explore", "period_index": 5, "time_mode": "cumulative"},
         },
     ]

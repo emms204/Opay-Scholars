@@ -40,8 +40,6 @@ export interface SchoolRecord {
   on_map: boolean;
 }
 
-export type StoryEffect = 'pulse_new_states' | 'surge';
-
 export interface StoryBeat {
   id: string;
   text: string;
@@ -50,11 +48,7 @@ export interface StoryBeat {
   layer?: LayerMode;
   period_index?: number;
   time_mode?: TimeMode;
-  use_3d?: boolean;
   playing?: boolean;
-  highlight_states?: string[];
-  highlight_growth_states?: string[];
-  effects?: StoryEffect[];
   on_exit?: {
     app_mode?: AppMode;
     period_index?: number;
@@ -102,13 +96,4 @@ export const PERIOD_LABELS: Record<PeriodId, string> = {
   Week4: 'Week 4 (16 – 22 Jun)',
   Week5: 'Week 5 (23 – 29 Jun)',
   FinalDays: 'Final Days (30 Jun – 3 Jul)',
-};
-
-export const ZONE_COLORS: Record<string, string> = {
-  'South West': '#1a73e8',
-  'North Central': '#34a853',
-  'North West': '#ea4335',
-  'South South': '#fbbc04',
-  'South East': '#9334e6',
-  'North East': '#ff6d01',
 };

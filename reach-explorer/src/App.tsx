@@ -4,8 +4,6 @@ import { Timeline } from './components/Timeline';
 import { LayerSwitcher } from './components/LayerSwitcher';
 import { SidePanel } from './components/SidePanel';
 import { StoryMode } from './components/StoryMode';
-import { PulseOverlay } from './components/PulseOverlay';
-import { MapLegend } from './components/MapLegend';
 import { useExplorerStore } from './store/explorerStore';
 import './styles/app.css';
 
@@ -16,7 +14,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="app loading-screen">
-        <p>Loading Nigeria Innovation Reach Explorer…</p>
+        <p>Loading OPay Scholars 2026…</p>
       </div>
     );
   }
@@ -34,8 +32,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div>
-          <p className="eyebrow">OPay Scholars 2026</p>
-          <h1>Mapped Applications Reach Explorer</h1>
+          <h1>OPay Scholars 2026</h1>
         </div>
         <div className="mode-toggle">
           <button
@@ -58,13 +55,11 @@ export default function App() {
         <LayerSwitcher />
         <div className="map-column">
           <ReachMap />
-          <MapLegend />
           <Timeline />
         </div>
         <SidePanel />
       </main>
       <StoryMode />
-      <PulseOverlay />
     </div>
   );
 }

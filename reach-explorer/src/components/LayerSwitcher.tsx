@@ -4,7 +4,7 @@ import { useExplorerStore } from '../store/explorerStore';
 const LAYERS: { id: LayerMode; label: string; desc: string }[] = [
   { id: 'states', label: 'States', desc: '36 states + FCT' },
   { id: 'zones', label: 'Zones', desc: '6 geopolitical zones' },
-  { id: 'schools', label: 'Schools', desc: 'Institution pillars' },
+  { id: 'schools', label: 'Schools', desc: 'Institution points' },
 ];
 
 const APPLICATION_VIEWS: { id: TimeMode; label: string; desc: string }[] = [
@@ -13,7 +13,7 @@ const APPLICATION_VIEWS: { id: TimeMode; label: string; desc: string }[] = [
 ];
 
 export function LayerSwitcher() {
-  const { layerMode, timeMode, setLayerMode, setTimeMode, use3D, setUse3D } = useExplorerStore();
+  const { layerMode, timeMode, setLayerMode, setTimeMode } = useExplorerStore();
 
   return (
     <div className="layer-switcher">
@@ -43,11 +43,6 @@ export function LayerSwitcher() {
           <span>{view.desc}</span>
         </button>
       ))}
-      <h3>Display</h3>
-      <label className="toggle-3d">
-        <input type="checkbox" checked={use3D} onChange={(e) => setUse3D(e.target.checked)} />
-        2.5D extrusion
-      </label>
     </div>
   );
 }

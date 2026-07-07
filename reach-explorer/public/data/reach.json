@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-07-07T03:24:36.342217+00:00",
+    "generated_at": "2026-07-07T03:45:08.728659+00:00",
     "total_applications": 2293,
     "on_map_applications": 1911,
     "data_through": "2026-07-03",
@@ -26513,9 +26513,7 @@
       },
       "layer": "states",
       "period_index": 5,
-      "time_mode": "cumulative",
-      "use_3d": false,
-      "effects": []
+      "time_mode": "cumulative"
     },
     {
       "id": "week1_spread",
@@ -26531,11 +26529,7 @@
       },
       "layer": "states",
       "period_index": 0,
-      "time_mode": "cumulative",
-      "use_3d": true,
-      "effects": [
-        "pulse_new_states"
-      ]
+      "time_mode": "cumulative"
     },
     {
       "id": "week2_coverage",
@@ -26551,11 +26545,7 @@
       },
       "layer": "states",
       "period_index": 1,
-      "time_mode": "cumulative",
-      "use_3d": true,
-      "effects": [
-        "pulse_new_states"
-      ]
+      "time_mode": "cumulative"
     },
     {
       "id": "week3_surge",
@@ -26572,16 +26562,7 @@
       "layer": "states",
       "period_index": 2,
       "time_mode": "weekly",
-      "use_3d": true,
-      "playing": true,
-      "highlight_growth_states": [
-        "Lagos",
-        "Kaduna",
-        "Kwara"
-      ],
-      "effects": [
-        "surge"
-      ]
+      "playing": true
     },
     {
       "id": "lagos_dominance",
@@ -26597,18 +26578,11 @@
       },
       "layer": "states",
       "period_index": 2,
-      "time_mode": "cumulative",
-      "use_3d": true,
-      "highlight_states": [
-        "Lagos",
-        "Ogun",
-        "Oyo"
-      ],
-      "effects": []
+      "time_mode": "cumulative"
     },
     {
       "id": "institutions",
-      "text": "635 institutions participated \u2014 school pillars cluster around innovation hubs.",
+      "text": "635 institutions participated \u2014 school points cluster around innovation hubs.",
       "duration_ms": 8000,
       "camera": {
         "center": [
@@ -26620,12 +26594,7 @@
       },
       "layer": "schools",
       "period_index": 2,
-      "time_mode": "weekly",
-      "use_3d": true,
-      "highlight_states": [
-        "Lagos"
-      ],
-      "effects": []
+      "time_mode": "weekly"
     },
     {
       "id": "final_push",
@@ -26642,8 +26611,6 @@
       "layer": "states",
       "period_index": 5,
       "time_mode": "weekly",
-      "use_3d": true,
-      "effects": [],
       "on_exit": {
         "app_mode": "explore",
         "period_index": 5,

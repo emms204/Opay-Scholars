@@ -18,7 +18,7 @@ const SCREENSHOT_DIR = join(process.cwd(), 'e2e-screenshots');
 
 async function waitForAppReady(page: Page) {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Mapped Applications Reach Explorer' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'OPay Scholars 2026' })).toBeVisible();
   await expect(page.getByTestId('accounting-total')).toHaveText(TOTAL);
   await expect(page.getByTestId('accounting-on-map')).toHaveText(ON_MAP);
   await expect(page.getByTestId('application-view-cumulative')).toHaveClass(/active/);
