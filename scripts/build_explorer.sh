@@ -8,6 +8,7 @@ source /opt/venv/global/bin/activate
 echo "==> Building reach.json"
 python geo/build_reach_data.py
 python geo/validate_reach_data.py
+python geo/compute_label_anchors.py
 
 echo "==> Generating Nigeria GeoJSON (if geopandas available)"
 python geo/generate_geojson.py 2>/dev/null || echo "    (skipped — using existing geojson)"

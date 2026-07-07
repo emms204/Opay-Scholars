@@ -30,6 +30,7 @@ export function SidePanel() {
     setLayerMode,
     currentPeriod,
     layerMode,
+    clearSelection,
   } = useExplorerStore();
 
   if (!data) return null;
@@ -162,11 +163,18 @@ export function SidePanel() {
     </div>
   );
 
-  if (compareState && selectedState) {
+  const backButton = (label = 'Back to overview') => (
+    <button type="button" className="back-btn" data-testid="panel-back" onClick={() => clearSelection()}>
+      ← {label}
+    </button>
+  );
+
+  if (compareState && selectedState && compareState.name !== selectedState.name) {
     const period = currentPeriod();
     return (
       <aside className="side-panel" data-testid="side-panel">
         <AccountingPanel data={data} />
+        {backButton()}
         <h3>State comparison</h3>
         <div className="compare-grid">
           {[selectedState, compareState].map((s) => (
@@ -179,7 +187,7 @@ export function SidePanel() {
             </div>
           ))}
         </div>
-        <button type="button" onClick={() => setCompareState(null)}>Clear comparison</button>
+        <button type="button" onClick={() => { setCompareState(null); clearSelection(); }}>Clear comparison</button>
       </aside>
     );
   }
@@ -231,6 +239,7 @@ export function SidePanel() {
             </button>
           )}
           <button type="button" onClick={() => setSelectedSchool(null)}>Close school</button>
+          {backButton()}
         </div>
       </aside>
     );
@@ -243,8 +252,14 @@ export function SidePanel() {
     return (
       <aside className="side-panel" data-testid="side-panel">
         <AccountingPanel data={data} />
+        {backButton()}
         <h3>{selectedState.name}</h3>
         <p className="zone-tag">{selectedState.zone}</p>
+        {compareState?.name === selectedState.name && (
+          <p className="pin-banner" data-testid="pin-banner">
+            Pinned for comparison — click another state on the map to compare.
+          </p>
+        )}
         <div className="stat-row">
           <div><span>Cumulative</span><strong>{cumulative.toLocaleString()}</strong></div>
           <div><span>This period</span><strong>+{weekly.toLocaleString()}</strong></div>
@@ -258,12 +273,13 @@ export function SidePanel() {
         <button
           type="button"
           className="compare-btn"
+          data-testid="pin-compare"
           onClick={() => {
-            if (compareState) setCompareState(null);
+            if (compareState?.name === selectedState.name) setCompareState(null);
             else setCompareState(selectedState);
           }}
         >
-          {compareState ? 'Clear comparison' : 'Pin for comparison'}
+          {compareState?.name === selectedState.name ? 'Unpin comparison' : 'Pin for comparison'}
         </button>
       </aside>
     );
@@ -278,6 +294,7 @@ export function SidePanel() {
     return (
       <aside className="side-panel" data-testid="side-panel">
         <AccountingPanel data={data} />
+        {backButton()}
         <h3>{zone.name}</h3>
         <p>
           {formatValue(selectedValue)} {timeMode === 'weekly' ? 'applications this period' : 'cumulative mapped applications'}
@@ -321,7 +338,13 @@ export function SidePanel() {
           }).slice(0, 12))}
         </>
       )}
-      <p className="hint">Click a state on the map to drill down into institutions.</p>
+      <p className="hint">
+        {layerMode === 'zones'
+          ? 'Click a zone on the map to drill down. Use ← Back to return to the national view.'
+          : layerMode === 'schools'
+            ? 'Search or filter schools below. Use ← Back after inspecting a state or zone.'
+            : 'Click a state on the map to drill down. Use ← Back to return to the national view.'}
+      </p>
     </aside>
   );
 }

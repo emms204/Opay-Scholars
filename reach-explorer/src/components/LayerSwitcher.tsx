@@ -13,7 +13,7 @@ const APPLICATION_VIEWS: { id: TimeMode; label: string; desc: string }[] = [
 ];
 
 export function LayerSwitcher() {
-  const { layerMode, timeMode, setLayerMode, setTimeMode } = useExplorerStore();
+  const { layerMode, timeMode, setLayerMode, setTimeMode, use3D, setUse3D } = useExplorerStore();
 
   return (
     <div className="layer-switcher">
@@ -43,6 +43,15 @@ export function LayerSwitcher() {
           <span>{view.desc}</span>
         </button>
       ))}
+      <label className="toggle-3d">
+        <input
+          type="checkbox"
+          checked={use3D}
+          data-testid="toggle-3d"
+          onChange={(e) => setUse3D(e.target.checked)}
+        />
+        2.5D extrusion
+      </label>
     </div>
   );
 }

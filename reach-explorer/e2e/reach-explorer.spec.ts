@@ -144,7 +144,7 @@ test.describe('Reach Explorer checklist', () => {
 
     const tooltip = page.getByTestId('map-tooltip');
     if (await tooltip.isVisible()) {
-      await expect(tooltip).toContainText(/applications/i);
+      await expect(tooltip).toContainText(/cumulative/i);
     }
 
     await drillDownZone(page);

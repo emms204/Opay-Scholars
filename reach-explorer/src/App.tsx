@@ -1,5 +1,6 @@
 import { useReachData } from './hooks/useReachData';
 import { ReachMap } from './components/ReachMap';
+import { MapLegend } from './components/MapLegend';
 import { Timeline } from './components/Timeline';
 import { LayerSwitcher } from './components/LayerSwitcher';
 import { SidePanel } from './components/SidePanel';
@@ -55,6 +56,7 @@ export default function App() {
         <LayerSwitcher />
         <div className="map-column">
           <ReachMap />
+          <MapLegend />
           <Timeline />
         </div>
         <SidePanel />
