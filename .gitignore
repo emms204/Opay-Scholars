@@ -1,0 +1,42 @@
+# Dependencies & build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Sensitive source data (PII) — keep locally, not in git
+*.xlsx
+*.xls
+
+# Report generation scripts (not needed for the explorer deploy)
+make_*.py
+monthly_aggregate.py
+nonpartner_pivot.py
+week6_aggregate.py
+
+*.docx
+opay_*_report.md
+opay_signup_final_report.md
+list_of_partner_universities.md
+
+# Dev / editor / tooling
+.specstory/
+.vscode/
+.cursorindexingignore
+SKILLS.md
+visualization_plan.md
+
+# Test artifacts
+test-results/
+playwright-report/
+blob-report/
+e2e-screenshots/
+
+# OS
+.DS_Store
+Thumbs.db
